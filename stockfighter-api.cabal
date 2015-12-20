@@ -20,8 +20,25 @@ Library
                       transformers >= 0.4 && < 0.5,
                       aeson >= 0.8 && < 0.9,
                       wreq >= 0.4 && < 0.5,
-                      lens >= 4.12 && < 5
+                      lens >= 4.12 && < 5,
+                      vector >= 0.10 && < 0.11,
+                      time >= 1.5 && < 1.6,
+                      bytestring >= 0.10 && < 0.11,
+                      unordered-containers >= 0.2 && < 0.3,
+                      scientific >= 0.3 && < 0.4,
+                      websockets >= 0.9 && < 0.10,
+                      wuss >= 1.0 && < 2.0
+
   ghc-options:        -Wall -fPIC
 
   exposed-modules:    Stockfighter,
-                      Stockfighter.Heartbeat
+                      Stockfighter.Guts,
+                      Stockfighter.Api.Heartbeat,
+                      Stockfighter.Venue.Heartbeat,
+                      Stockfighter.Venue.Stocks,
+                      Stockfighter.Stock.OrderBook,
+                      Stockfighter.Stock.Order,
+                      Stockfighter.Stock.Order.Status
+                      Stockfighter.Stock.Order.Cancel,
+                      Stockfighter.Streaming.Quotes,
+                      Stockfighter.Streaming.Executions

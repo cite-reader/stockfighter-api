@@ -1,15 +1,15 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Stockfighter.Heartbeat (
+module Stockfighter.Api.Heartbeat (
   Result (..),
   heartbeat
   ) where
 
 import Data.Text (Text)
-import Data.Aeson (FromJSON (..), (.:), Value (..), decode)
-import Control.Lens ((^.))
-import Network.Wreq
+import Data.Aeson (FromJSON (..), (.:), Value (..))
 import Control.Monad (mzero)
+
+import Stockfighter.Guts (doGet)
 
 data Result = Result {
   ok :: !Bool,
@@ -22,6 +22,5 @@ instance FromJSON Result where
                          v .: "error"
   parseJSON _ = mzero
 
-heartbeat :: IO (Maybe Result)
-heartbeat = decode . (^. responseBody) <$>
-            get "https://api.stockfighter.io/ob/api/heartbeat"
+heartbeat :: IO (Either String Result)
+heartbeat = doGet "https://api.stockfighter.io/ob/api/heartbeat"
