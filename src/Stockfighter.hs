@@ -5,13 +5,15 @@ module Stockfighter (
   Account (..), getAccount,
   Direction (..),
   OrderType (..),
-  Key (..), getKey
+  Key (..), getKey,
+  Quote (..)
   ) where
 
 import Data.Text (Text)
 import Data.ByteString (ByteString)
 import Data.Aeson (ToJSON (..), Value (..), FromJSON (..))
 import Control.Monad (mzero)
+import Data.Time.LocalTime (ZonedTime)
 
 newtype Venue = Venue Text deriving (Eq, Show)
 
@@ -78,3 +80,19 @@ newtype Key = Key ByteString deriving (Eq, Show)
 
 getKey :: Key -> ByteString
 getKey (Key k) = k
+
+data Quote = Quote {
+  ok :: !Bool,
+  symbol :: !Stock,
+  venue :: !Venue,
+  bid :: {-# UNPACK #-} !Word,
+  ask :: {-# UNPACK #-} !Word,
+  bidSize :: {-# UNPACK #-} !Word,
+  askSize :: {-# UNPACK #-} !Word,
+  bidDepth :: {-# UNPACK #-} !Word,
+  askDepth :: {-# UNPACK #-} !Word,
+  last :: {-# UNPACK #-} !Word,
+  lastSize :: {-# UNPACK #-} !Word,
+  lastTrade :: !ZonedTime,
+  quoteTime :: !ZonedTime
+  } deriving Show

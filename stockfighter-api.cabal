@@ -37,6 +37,7 @@ Library
                       Stockfighter.Venue.Heartbeat,
                       Stockfighter.Venue.Stocks,
                       Stockfighter.Stock.OrderBook,
+                      Stockfighter.Stock.Quote,
                       Stockfighter.Stock.Order,
                       Stockfighter.Stock.Order.Status
                       Stockfighter.Stock.Order.Cancel,

@@ -15,7 +15,7 @@ import Data.Scientific (scientific)
 import Control.Monad (mzero)
 import Control.Applicative ((<|>))
 
-import Stockfighter
+import Stockfighter hiding (Quote (..))
 import Stockfighter.Guts (doPost)
 
 data Order = Order {

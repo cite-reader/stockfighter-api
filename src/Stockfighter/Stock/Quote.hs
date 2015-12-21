@@ -1,6 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Stockfighter.Stock.Quote (
-  Result (..),
   getQuote
   ) where
 
@@ -8,40 +7,33 @@ import Data.Aeson (FromJSON (..), (.:), Value (..))
 import Control.Monad (mzero)
 import Data.Text (unpack)
 
-import Stockfighter (Venue (Venue), Stock (Stock))
+import Stockfighter
+import Stockfighter.Guts
 
-data Result = Result {
-  ok :: !Bool,
-  symbol :: !Stock,
-  venue :: !Venue,
-  bid :: {-# UNPACK #-} !Word,
-  ask :: {-# UNPACK #-} !Word,
-  bidSize :: {-# UNPACK #-} !Word,
-  askSize :: {-# UNPACK #-} !Word,
-  bidDepth :: {-# UNPACK #-} !Word,
-  askDepth :: {-# UNPACK #-} !Word,
-  last :: {-# UNPACK #-} !Word,
-  lastSize :: {-# UNPACK #-} !Word,
-  lastTrade :: !DateTime,
-  quoteTime :: !DateTime
-  } deriving (Eq, Show)
+newtype StockQuote = StockQuote Quote
 
-instance FromJSON Result where
-  parseJson (Object v) = Result <$>
+unwrapQuote :: StockQuote -> Quote
+unwrapQuote (StockQuote quote) = quote
+
+instance FromJSON StockQuote where
+  parseJSON (Object v) = fmap StockQuote $ Quote <$>
                          v .: "ok" <*>
                          v .: "symbol" <*>
+                         v .: "venue" <*>
                          v .: "bid" <*>
                          v .: "ask" <*>
                          v .: "bidSize" <*>
                          v .: "askSize" <*>
                          v .: "bidDepth" <*>
+                         v .: "askDepth" <*>
                          v .: "last" <*>
                          v .: "lastSize" <*>
                          v .: "lastTrade" <*>
                          v .: "quoteTime"
-  parseJson _ = mzero
+  parseJSON _ = mzero
 
-getQuote :: Venue -> Stock -> IO (Either String Result)
+getQuote :: Venue -> Stock -> IO (Either String Quote)
 getQuote (Venue v) (Stock s) =
-  doGet $ "https://api.stockfighter.io/ob/api/venues/" ++ unpack v ++
-          "/stocks/" ++ unpack s ++ "/quote
+  fmap (fmap unwrapQuote)
+  (doGet $ "https://api.stockfighter.io/ob/api/venues/" ++ unpack v ++
+   "/stocks/" ++ unpack s ++ "/quote")

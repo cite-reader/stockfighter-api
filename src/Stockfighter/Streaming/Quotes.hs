@@ -1,11 +1,9 @@
 {-# LANGUAGE OverloadedStrings, LambdaCase #-}
 module Stockfighter.Streaming.Quotes (
-  Quote (..),
   foldQuotes,
   foldStockQuotes
   ) where
 
-import Data.Time.LocalTime (ZonedTime)
 import Data.Aeson (FromJSON (..), (.:), Value (..))
 import Control.Monad (mzero)
 import Data.Text (unpack)
@@ -13,26 +11,15 @@ import Data.Text (unpack)
 import Stockfighter
 import Stockfighter.Guts
 
-data Quote = Quote {
-  ok :: !Bool,
-  symbol :: !Stock,
-  venue :: !Venue,
-  bid :: {-# UNPACK #-} !Word,
-  ask :: {-# UNPACK #-} !Word,
-  bidSize :: {-# UNPACK #-} !Word,
-  askSize :: {-# UNPACK #-} !Word,
-  bidDepth :: {-# UNPACK #-} !Word,
-  askDepth :: {-# UNPACK #-} !Word,
-  last :: {-# UNPACK #-} !Word,
-  lastSize :: {-# UNPACK #-} !Word,
-  lastTrade :: !ZonedTime,
-  quoteTime :: !ZonedTime
-  } deriving Show
+newtype StreamingQuote = Streaming Quote
 
-instance FromJSON Quote where
+getQuote :: StreamingQuote -> Quote
+getQuote (Streaming quote) = quote
+
+instance FromJSON StreamingQuote where
   parseJSON (Object o) = do
     q <- o .: "quote"
-    Quote <$>
+    fmap Streaming $ Quote <$>
       o .: "ok" <*>
       q .: "symbol" <*>
       q .: "venue" <*>
@@ -49,13 +36,15 @@ instance FromJSON Quote where
   parseJSON _ = mzero
 
 foldQuotes :: Account -> Venue -> (Either String Quote -> IO r) -> IO a
-foldQuotes (Account a) (Venue v) action = websocketClient path action
+foldQuotes (Account a) (Venue v) action =
+  websocketClient path (action . (fmap getQuote))
   where
     path = "/ob/api/ws/" ++ unpack a ++ "/venues/" ++ unpack v ++ "/tickertape"
 
 foldStockQuotes :: Account -> Venue -> Stock -> (Either String Quote -> IO r)
                    -> IO a
-foldStockQuotes (Account a) (Venue v) (Stock s) act = websocketClient path act
+foldStockQuotes (Account a) (Venue v) (Stock s) action =
+  websocketClient path (action . (fmap getQuote))
   where
     path = "/ob/api/ws/" ++ unpack a ++ "/venues/" ++ unpack v ++
            "/tickertape/stocks/" ++ unpack s
