@@ -3,7 +3,7 @@ module Stockfighter.Stock.Quote (
   getQuote
   ) where
 
-import Data.Aeson (FromJSON (..), (.:), Value (..))
+import Data.Aeson (FromJSON (..), (.:), (.:?), Value (..))
 import Control.Monad (mzero)
 import Data.Text (unpack)
 
@@ -20,8 +20,8 @@ instance FromJSON StockQuote where
                          v .: "ok" <*>
                          v .: "symbol" <*>
                          v .: "venue" <*>
-                         v .: "bid" <*>
-                         v .: "ask" <*>
+                         v .:? "bid" <*>
+                         v .:? "ask" <*>
                          v .: "bidSize" <*>
                          v .: "askSize" <*>
                          v .: "bidDepth" <*>

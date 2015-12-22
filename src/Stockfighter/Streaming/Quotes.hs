@@ -4,7 +4,7 @@ module Stockfighter.Streaming.Quotes (
   foldStockQuotes
   ) where
 
-import Data.Aeson (FromJSON (..), (.:), Value (..))
+import Data.Aeson (FromJSON (..), (.:), (.:?), Value (..))
 import Control.Monad (mzero)
 import Data.Text (unpack)
 
@@ -23,8 +23,8 @@ instance FromJSON StreamingQuote where
       o .: "ok" <*>
       q .: "symbol" <*>
       q .: "venue" <*>
-      q .: "bid" <*>
-      q .: "ask" <*>
+      q .:? "bid" <*>
+      q .:? "ask" <*>
       q .: "bidSize" <*>
       q .: "askSize" <*>
       q .: "bidDepth" <*>
