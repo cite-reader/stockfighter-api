@@ -5,7 +5,7 @@ module Stockfighter.Stock.Order.Status (
   getStatus,
   ) where
 
-import Data.Time.LocalTime (ZonedTime)
+import Data.Time.Clock (UTCTime)
 import Data.Aeson (FromJSON (..), (.:), Value (..))
 import Control.Monad (mzero)
 import Data.Text (unpack)
@@ -25,7 +25,7 @@ data Result = Result {
   orderType :: !OrderType,
   identity :: {-# UNPACK #-} !Word,
   account :: !Account,
-  orderPlaced :: !ZonedTime,
+  orderPlaced :: !UTCTime,
   fills :: !(Vector Fill),
   totalFills :: {-# UNPACK #-} !Word,
   open :: !Bool
@@ -34,21 +34,21 @@ data Result = Result {
 data Fill = Fill {
   fillPrice :: {-# UNPACK #-} !Word,
   qty :: {-# UNPACK #-} !Word,
-  time :: {-# UNPACK #-} !ZonedTime
+  time :: {-# UNPACK #-} !UTCTime
   } deriving Show
 
 instance FromJSON Result where
   parseJSON (Object o) = Result <$>
                          o .: "ok" <*>
-                         fmap Stock (o .: "symbol") <*>
-                         fmap Venue (o .: "venue") <*>
+                         o .: "symbol" <*>
+                         o .: "venue" <*>
                          o .: "direction" <*>
                          o .: "originalQty" <*>
                          o .: "qty" <*>
                          o .: "price" <*>
                          o .: "orderType" <*>
                          o .: "id" <*>
-                         fmap Account (o .: "account") <*>
+                         o .: "account" <*>
                          o .: "ts" <*>
                          o .: "fills" <*>
                          o .: "totalFilled" <*>

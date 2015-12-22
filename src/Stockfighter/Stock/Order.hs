@@ -6,7 +6,7 @@ module Stockfighter.Stock.Order (
   placeOrder
   ) where
 
-import Data.Time.LocalTime (ZonedTime)
+import Data.Time.Clock (UTCTime)
 import Data.Vector (Vector)
 import Data.Text (unpack)
 import Data.Aeson (ToJSON (..), FromJSON (..), Value (..), (.:))
@@ -51,7 +51,7 @@ data Result = Result {
   rType :: !OrderType,
   identity :: {-# UNPACK #-} !Word,
   rAccount :: !Account,
-  timestamp :: !ZonedTime, -- ^ When the exchange received the order
+  timestamp :: !UTCTime, -- ^ When the exchange received the order
   fills :: !(Vector Fill),
   totalFilled :: {-# UNPACK #-} !Word,
   open :: !Bool
@@ -77,7 +77,7 @@ instance FromJSON Result where
 data Fill = Fill {
   fillPrice :: {-# UNPACK #-} !Word,
   fillQty :: {-# UNPACK #-} !Word,
-  ts :: !ZonedTime
+  ts :: !UTCTime
   } deriving Show
 
 instance FromJSON Fill where

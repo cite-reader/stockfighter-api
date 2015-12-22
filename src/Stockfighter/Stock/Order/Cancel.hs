@@ -5,7 +5,7 @@ module Stockfighter.Stock.Order.Cancel (
   cancelOrder
   ) where
 
-import Data.Time.LocalTime (ZonedTime)
+import Data.Time.Clock (UTCTime)
 import Data.Aeson (FromJSON (..), (.:), Value (..))
 import Control.Monad (mzero)
 import Data.Vector (Vector)
@@ -25,7 +25,7 @@ data Result = Result {
   orderType :: !OrderType,
   identity :: {-# UNPACK #-} !Word,
   account :: !Account,
-  ts :: !ZonedTime,
+  ts :: !UTCTime,
   fills :: !(Vector Fill),
   totalFilled :: {-# UNPACK #-} !Word,
   open :: !Bool
@@ -34,7 +34,7 @@ data Result = Result {
 data Fill = Fill {
   fillPrice :: {-# UNPACK #-} !Word,
   quantity :: {-# UNPACK #-} !Word,
-  time :: !ZonedTime
+  time :: !UTCTime
   } deriving Show
 
 instance FromJSON Result where

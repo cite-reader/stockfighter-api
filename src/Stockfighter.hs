@@ -6,14 +6,16 @@ module Stockfighter (
   Direction (..),
   OrderType (..),
   Key (..), getKey,
-  Quote (..)
+  Quote (..),
+  TemporalQuote (..)
   ) where
 
 import Data.Text (Text)
 import Data.ByteString (ByteString)
 import Data.Aeson (ToJSON (..), Value (..), FromJSON (..))
 import Control.Monad (mzero)
-import Data.Time.LocalTime (ZonedTime)
+import Data.Time.Clock (UTCTime)
+import Data.Ord (comparing)
 
 newtype Venue = Venue Text deriving (Eq, Show)
 
@@ -93,6 +95,20 @@ data Quote = Quote {
   askDepth :: {-# UNPACK #-} !Word,
   last :: {-# UNPACK #-} !Word,
   lastSize :: {-# UNPACK #-} !Word,
-  lastTrade :: !ZonedTime,
-  quoteTime :: !ZonedTime
-  } deriving Show
+  lastTrade :: !UTCTime,
+  quoteTime :: !UTCTime
+  } deriving (Eq, Show)
+
+-- | It would be nice to place 'Quote's in something like an LVIsh LVar, but
+--   the only ordering we care about is /temporal/ order on the exchange\'s
+--   world-line. Implementing 'Ord' on 'Quote' directly would cause it to
+--   disagree with the natural 'Eq', and crippling the base type\'s 'Eq' is...
+--   dubious. This newtype explicitly projects us into the world where we only
+--   care about the time the quote is generated.
+newtype TemporalQuote = Temporal Quote deriving Show
+
+instance Eq TemporalQuote where
+  Temporal q1 == Temporal q2 = quoteTime q1 == quoteTime q2
+
+instance Ord TemporalQuote where
+  compare (Temporal q1) (Temporal q2) = comparing quoteTime q1 q2

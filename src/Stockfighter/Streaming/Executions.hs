@@ -9,7 +9,7 @@ module Stockfighter.Streaming.Executions (
 
 import Control.Monad (mzero)
 import Data.Aeson (FromJSON (..), (.:), Value (..))
-import Data.Time.LocalTime (ZonedTime)
+import Data.Time.Clock (UTCTime)
 import Data.Vector (Vector)
 import Data.Text (unpack)
 
@@ -26,7 +26,7 @@ data Execution = Execution {
   incomingId :: {-# UNPACK #-} !Word,
   price :: {-# UNPACK #-} !Word,
   filled :: {-# UNPACK #-} !Word,
-  filledAt :: !ZonedTime,
+  filledAt :: !UTCTime,
   standingComplete :: !Bool,
   incomingComplete :: !Bool
   } deriving Show
@@ -43,7 +43,7 @@ data Order = Order {
   orderType :: !OrderType,
   identity :: {-# UNPACK #-} !Word,
   oAccount :: !Account,
-  ts :: !ZonedTime,
+  ts :: !UTCTime,
   fills :: !(Vector Fill),
   totalFilled :: {-# UNPACK #-} !Word,
   open :: !Bool
@@ -52,7 +52,7 @@ data Order = Order {
 data Fill = Fill {
   fPrice :: {-# UNPACK #-} !Word,
   fQty :: {-# UNPACK #-} !Word,
-  fillTime :: !ZonedTime
+  fillTime :: !UTCTime
   } deriving Show
 
 instance FromJSON Execution where
