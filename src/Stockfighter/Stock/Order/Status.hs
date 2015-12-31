@@ -27,7 +27,7 @@ data Result = Result {
   account :: !Account,
   orderPlaced :: !UTCTime,
   fills :: !(Vector Fill),
-  totalFills :: {-# UNPACK #-} !Word,
+  totalFilled :: {-# UNPACK #-} !Word,
   open :: !Bool
   } deriving Show
 
